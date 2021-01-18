@@ -19,7 +19,7 @@ let startGame = () => {
 let initNewPill = () => {
     console.log('init new pills');
     canControl = true;
-    movingPill = []
+    movingPill = [];
     for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
         const pillCell = new PillCell(0, Math.floor(BOARD_COLUMNS/2) + pillsCountIter - 1, pillsCountIter)
         movingPill.push(pillCell)
@@ -30,18 +30,18 @@ let initNewPill = () => {
 
 let movePillToDown = () => {
     let isMovingMaked = mainBoard.movePill(movingPill, 1, 0)
-    if (!isMovingMaked){
+    if (!isMovingMaked){    // when pill hit bottom
         clearInterval(movingPillInterval);
         movingPill.forEach(pillCell => {
             pillCell.isFalling = false;
         });
         movingPill = [];
+        mainBoard.doBeating();
         initNewPill();
     }
 }
 
 let keyDownHandler = (e) => {
-    console.log(e.keyCode);
     switch (e.keyCode) {
         case 65:
         case 37:    // a

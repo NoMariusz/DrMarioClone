@@ -10,6 +10,14 @@ export default class PillCell extends BoardCell{
         this.type = CELL_TYPES.pill;
         this.isFalling = true;
         this.isHorizontal = true;
-        this.place = place; // illCell place at pill from left bottom
+        this.singleCell = false;
+        this.place = place; // pillCell place at pill from left bottom
+    }
+    
+    resetCell(){
+        this.color = '';
+        this.type = CELL_TYPES.blank;
+        this.isFalling = false;
+        this.singleCell = true;
     }
 }
