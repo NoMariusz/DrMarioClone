@@ -5,9 +5,26 @@
     background-color: black;
 }
 
+html{
+    height: 100%;
+}
+
+body{
+    height: 100%;
+}
+
+#app{
+    width: 100%;
+    height: 100%;
+    background-image: url('./img/pf.png');
+    background-size: 100% 100%;
+}
+
 #boardBlock{
-    position: relative;
-    margin: 2rem auto 0;
+    width: 20%;
+    height: 67.5%;
+    margin: 24.2vh 0 0 42.5%;
+    position: absolute;
     background-color: black;
 }
 
@@ -15,4 +32,26 @@
     position: absolute;
     border: 0.05rem solid gray;
     background-color: black;
+    background-size: 100% 100%;
+}
+
+#scoreBlock{
+    width: 28%;
+    height: 32.3%;
+    margin: 10vh 0 0 5%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.scoreNumbers{
+    width: 63%;
+    height: 12%;
+    margin-left: 27%;
+}
+
+.scoreNumber{
+    width: 14.28%;
+    height: 100%;
+    float: left;
+    background-size: 100% 100%;
 }

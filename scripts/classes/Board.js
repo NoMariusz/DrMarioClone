@@ -1,20 +1,22 @@
 import BoardCell from "./BoardCell.js";
+import RecordsBlock from "./RecordsBlock.js";
 import {
     CHECK_CELL_CAN_MOVE_STATUSES,
     CELL_TYPES,
     BOARD_ROWS,
     BOARD_COLUMNS,
-    BOARD_WIDTH,
+    PILL_AUTO_FALL_FREQUENCY,
 } from "../constants.js";
 
 ("use strict");
 
 export default class Board {
-    constructor(htmlNode) {
+    constructor() {
         this.array = this.initArray();
-        this.htmlNode = htmlNode;
-        this.prepareNode();
+        this.htmlNode = document.getElementById("boardBlock");
         this.renderBoard();
+        // initialize records block to display records
+        this.recordsBlock = new RecordsBlock();
     }
 
     initArray() {
@@ -32,9 +34,9 @@ export default class Board {
         return newArray;
     }
 
-    prepareNode() {
-        this.htmlNode.style.width = BOARD_WIDTH;
-        this.htmlNode.style.height = parseInt(BOARD_WIDTH) * 2 + "rem";
+    refresh(){
+        this.renderBoard()
+        this.recordsBlock.renderBlock()
     }
 
     renderBoard() {
@@ -46,14 +48,7 @@ export default class Board {
                 columnIndex++
             ) {
                 let cellObj = this.array[rowIndex][columnIndex];
-
-                let cellNode = document.createElement("div");
-                cellNode.style.width = 100 / BOARD_COLUMNS + "%";
-                cellNode.style.height = 100 / BOARD_ROWS + "%";
-                cellNode.style.top = (100 / BOARD_ROWS) * rowIndex + "%";
-                cellNode.style.left = (100 / BOARD_COLUMNS) * columnIndex + "%";
-                cellNode.style.backgroundColor = cellObj.color;
-                cellNode.classList.add("cell");
+                let cellNode = cellObj.makeCellNode(rowIndex, columnIndex)
                 this.htmlNode.appendChild(cellNode);
             }
         }
@@ -78,7 +73,7 @@ export default class Board {
         }
         if (
             this.array[newRow][newColumn].type != CELL_TYPES.blank &&
-            !this.array[newRow][newColumn].isFalling
+            this.array[newRow][newColumn].adjacentCell != cell
         ) {
             // console.log('checkCellCanMove CHECK_CELL_CAN_MOVE_STATUSES.hitOtherBlock');
             return CHECK_CELL_CAN_MOVE_STATUSES.hitOtherBlock;
@@ -89,7 +84,7 @@ export default class Board {
 
     insertNewCell(cell) {
         this.array[cell.row].splice(cell.column, 1, cell);
-        this.renderBoard();
+        // this.renderBoard();
     }
 
     swapCells(cell1, cell2) {
@@ -97,7 +92,7 @@ export default class Board {
         this.array[cell2.row].splice(cell2.column, 1, cell1);
         [cell1.row, cell2.row] = [cell2.row, cell1.row];
         [cell1.column, cell2.column] = [cell2.column, cell1.column];
-        this.renderBoard();
+        // this.renderBoard();
     }
 
     moveCell(cell, velocityRow, velocityColumn) {
@@ -145,12 +140,21 @@ export default class Board {
         return false;
     }
 
-    rotatePill(pill, toLeft) {
+    // rotation
+
+    rotatePill(pill, toLeft){       // some wrapper to render after rotation
+        let result = this.makePillRotation(pill, toLeft)
+        // this.renderBoard();
+        return result
+    }
+
+    makePillRotation(pill, toLeft) {    // function making mainly rotation
         let changePillPlaces = () => {
-            //changing places, to first pill be at left or bottom
+            // changing places, to first pill be at left or bottom
             [pill[0].place, pill[1].place] = [pill[1].place, pill[0].place];
             pill = pill.sort((a, b) => a.place - b.place);
         };
+
         let doubleCellRotate = (
             pill0RowVelocity,
             pill0ColumnVelocity,
@@ -190,6 +194,7 @@ export default class Board {
             changePillPlaces();
             return true;
         };
+
         let singleCellRotate = (
             pill1RowVelocity,
             pill1ColumnVelocity,
@@ -296,8 +301,51 @@ export default class Board {
         cellsToBeat = cellsToBeat.concat(getfoundCells(true));
         // vertical beating
         cellsToBeat = cellsToBeat.concat(getfoundCells(false));
+
+        if (cellsToBeat.length == 0) {
+            return false;
+        }
+
         cellsToBeat.forEach((cell) => {
             cell.resetCell();
         });
+        // this.renderBoard();
+        return true;
+    }
+
+    doFalling(afterFallingCallback) {
+        let autoFallingInterval = setInterval(() => {
+            console.log("autoFallingInterval");
+            // get array of pills
+            let pillArray = this.array
+                .map((row) =>
+                    row.map((cell) => {
+                        if (cell.type == CELL_TYPES.pill) {
+                            return !cell.singleCell
+                                ? [cell, cell.adjacentCell]
+                                : [cell];
+                        }
+                    })
+                )
+                .map((row) => row.filter((el) => el != undefined))
+                .filter((row) => row.length > 0)
+                .flat();
+            // sort array from cells on down to up and delete uniques
+            pillArray.sort((a, b) => b[0].row - a[0].row);
+            console.log(pillArray);
+            // for every cell move them down by  movePill(pill, 1, 0)
+            let makedMoving = false;
+            pillArray.forEach((pill) => {
+                console.log(`moving pill ${pill}`);
+                let moved = this.movePill(pill, 1, 0);
+                makedMoving = moved ? true : makedMoving; // if move pill, change makedMoving to true
+            });
+            // if at least one of them moved then make it again
+            // if no one moved call afterFallingCallback, and end
+            if (!makedMoving) {
+                afterFallingCallback();
+                clearInterval(autoFallingInterval);
+            }
+        }, PILL_AUTO_FALL_FREQUENCY);
     }
 }
