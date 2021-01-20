@@ -1,7 +1,5 @@
 import Board from "./classes/Board.js";
-import PillCell from "./classes/PillCell.js";
 import {
-    BOARD_COLUMNS,
     PILL_FALL_FREQUENCY,
     REFRESH_RATE,
 } from "./constants.js";
@@ -12,9 +10,10 @@ let movingPillInterval;
 let movingPill = [];
 let mainBoard;
 let canControl = true;
+let stage = 1;
 
 let startGame = () => {
-    mainBoard = new Board();
+    mainBoard = new Board(stage, stageCompleted, gameOver);
     console.log("Main Board array", mainBoard.array);
     initNewPill();
     document.body.onkeydown = keyDownHandler;
@@ -26,19 +25,7 @@ let startGame = () => {
 let initNewPill = () => {
     console.log("init new pills");
     canControl = true;
-    movingPill = [];
-    for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
-        const pillCell = new PillCell(
-            0,
-            Math.floor(BOARD_COLUMNS / 2) + pillsCountIter - 1,
-            pillsCountIter
-        );
-        movingPill.push(pillCell);
-        mainBoard.insertNewCell(pillCell);
-    }
-    // setting reference between pillCells
-    movingPill[0].adjacentCell = movingPill[1];
-    movingPill[1].adjacentCell = movingPill[0];
+    movingPill = mainBoard.addNewPill();
 
     movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
 };
@@ -108,5 +95,13 @@ let throwPill = () => {
 let refreshDisplay = () => {
     mainBoard.refresh();
 };
+
+let gameOver = () => {
+    alert('game over')
+}
+
+let stageCompleted = () => {
+    alert('stageCompleeted')
+}
 
 startGame();

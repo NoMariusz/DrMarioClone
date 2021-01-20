@@ -50,7 +50,7 @@ export default class ScoreBlock {
             this.node.appendChild(block);
             block.classList.add("scoreNumbers");
             block.style.marginTop =
-                score == this.top ? TOP_MARGIN_TOP : SCORE_MARGIN_TOP;
+                score === this.top ? TOP_MARGIN_TOP : SCORE_MARGIN_TOP;
 
             for (let numIter = 0; numIter < 7; numIter++) {
                 let cell = document.createElement("div");

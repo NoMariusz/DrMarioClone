@@ -1,4 +1,8 @@
-import { CELL_TYPES, COLORS } from "../constants.js";
+import {
+    CELL_TYPES,
+    COLORS,
+    PILL_BEAT_TIME
+} from "../constants.js";
 import BoardCell from "./BoardCell.js";
 
 ("use strict");
@@ -12,19 +16,21 @@ export default class PillCell extends BoardCell {
         this.isHorizontal = true;
         this.singleCell = false;
         this.adjacentCell = null;
+        this.isBeat = false;
         this.place = place; // pillCell place at pill from left bottom
     }
 
     getCellPosition() {
         return this.isHorizontal
-            ? 
-                this.place == 0 ? "left" : "right"
-            : 
-                this.place == 0 ? "down" : "up";
+            ? this.place == 0
+                ? "left"
+                : "right"
+            : this.place == 0
+            ? "down"
+            : "up";
     }
 
-    resetCell() {
-        this.color = "";
+    beat(afterAnimCallback) {
         this.type = CELL_TYPES.blank;
         this.isFalling = false;
         // destroy connection between pill cells
@@ -34,12 +40,28 @@ export default class PillCell extends BoardCell {
             this.adjacentCell.adjacentCell = null;
             this.adjacentCell = null;
         }
+
+        this.isBeat = true
+        setTimeout(() => {
+            afterAnimCallback();
+        }, PILL_BEAT_TIME);
     }
 
     makeCellNode(rowIndex, columnIndex) {
         let cellNode = super.makeCellNode(rowIndex, columnIndex);
-        cellNode.style.backgroundImage = 
-            `url('./img/${this.color}_${this.getCellPosition()}.png')`;
+
+        let backgroundStr = 
+            this.isBeat 
+            ? 
+            `url('./img/${this.color}_o.png')`
+            :
+            this.singleCell
+                ? `url('./img/${this.color}_dot.png')`
+                : `url('./img/${
+                        this.color
+                    }_${this.getCellPosition()}.png')`;
+        cellNode.style.backgroundImage = backgroundStr;
+
         return cellNode;
     }
 }

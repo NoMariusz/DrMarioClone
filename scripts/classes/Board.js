@@ -1,22 +1,31 @@
 import BoardCell from "./BoardCell.js";
+import PillCell from "./PillCell.js";
+import VirusCell from "./VirusCell.js";
 import RecordsBlock from "./RecordsBlock.js";
 import {
     CHECK_CELL_CAN_MOVE_STATUSES,
     CELL_TYPES,
     BOARD_ROWS,
     BOARD_COLUMNS,
+    COLORS,
     PILL_AUTO_FALL_FREQUENCY,
 } from "../constants.js";
 
 ("use strict");
 
 export default class Board {
-    constructor() {
+    constructor(stage, winCallback, loseCallback) {
+        this.stage = stage;
         this.array = this.initArray();
         this.htmlNode = document.getElementById("boardBlock");
         this.renderBoard();
+
         // initialize records block to display records
         this.recordsBlock = new RecordsBlock();
+
+        this.virusesCount = this.spawnViruses();
+        this.winCallback = winCallback
+        this.loseCallback = loseCallback
     }
 
     initArray() {
@@ -34,9 +43,9 @@ export default class Board {
         return newArray;
     }
 
-    refresh(){
-        this.renderBoard()
-        this.recordsBlock.renderBlock()
+    refresh() {
+        this.renderBoard();
+        this.recordsBlock.renderBlock();
     }
 
     renderBoard() {
@@ -48,10 +57,27 @@ export default class Board {
                 columnIndex++
             ) {
                 let cellObj = this.array[rowIndex][columnIndex];
-                let cellNode = cellObj.makeCellNode(rowIndex, columnIndex)
+                let cellNode = cellObj.makeCellNode(rowIndex, columnIndex);
                 this.htmlNode.appendChild(cellNode);
             }
         }
+    }
+
+    addNewPill(){
+        let pill = [];
+        for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
+            const pillCell = new PillCell(
+                0,
+                Math.floor(BOARD_COLUMNS / 2) + pillsCountIter - 1,
+                pillsCountIter
+            );
+            pill.push(pillCell);
+            this.insertNewCell(pillCell);
+        }
+        // setting reference between pillCells
+        pill[0].adjacentCell = pill[1];
+        pill[1].adjacentCell = pill[0];
+        return pill;
     }
 
     checkCellCanMove(cell, newRow, newColumn) {
@@ -61,30 +87,28 @@ export default class Board {
             newRow < 0 ||
             newColumn < 0
         ) {
-            // console.log('checkCellCanMove CHECK_CELL_CAN_MOVE_STATUSES.hitBorder');
             return CHECK_CELL_CAN_MOVE_STATUSES.hitBorder;
         }
         if (
             Math.abs(cell.row - newRow) > 1 ||
             Math.abs(cell.column - newColumn) > 1
         ) {
-            // console.log('checkCellCanMove CHECK_CELL_CAN_MOVE_STATUSES.tooMuchDistance');
             return CHECK_CELL_CAN_MOVE_STATUSES.tooMuchDistance;
         }
         if (
             this.array[newRow][newColumn].type != CELL_TYPES.blank &&
             this.array[newRow][newColumn].adjacentCell != cell
         ) {
-            // console.log('checkCellCanMove CHECK_CELL_CAN_MOVE_STATUSES.hitOtherBlock');
             return CHECK_CELL_CAN_MOVE_STATUSES.hitOtherBlock;
         }
-        // console.log('checkCellCanMove CHECK_CELL_CAN_MOVE_STATUSES.canMove');
         return CHECK_CELL_CAN_MOVE_STATUSES.canMove;
     }
 
     insertNewCell(cell) {
-        this.array[cell.row].splice(cell.column, 1, cell);
-        // this.renderBoard();
+        let poppedCell = this.array[cell.row].splice(cell.column, 1, cell)[0];
+        if (poppedCell.type == CELL_TYPES.pill){
+            this.loseCallback();
+        }
     }
 
     swapCells(cell1, cell2) {
@@ -92,7 +116,6 @@ export default class Board {
         this.array[cell2.row].splice(cell2.column, 1, cell1);
         [cell1.row, cell2.row] = [cell2.row, cell1.row];
         [cell1.column, cell2.column] = [cell2.column, cell1.column];
-        // this.renderBoard();
     }
 
     moveCell(cell, velocityRow, velocityColumn) {
@@ -142,13 +165,8 @@ export default class Board {
 
     // rotation
 
-    rotatePill(pill, toLeft){       // some wrapper to render after rotation
-        let result = this.makePillRotation(pill, toLeft)
-        // this.renderBoard();
-        return result
-    }
-
-    makePillRotation(pill, toLeft) {    // function making mainly rotation
+    rotatePill(pill, toLeft) {
+        // function making rotation, by changing places of pills
         let changePillPlaces = () => {
             // changing places, to first pill be at left or bottom
             [pill[0].place, pill[1].place] = [pill[1].place, pill[0].place];
@@ -244,78 +262,95 @@ export default class Board {
 
     doBeating() {
         // find all beating cells and celar they
-        const getfoundCells = (horizontal) => {
-            let foundCells = [];
-            // firstIterMax determine for max to firstIter work like row in
-            // horizontal and like column to vertical
-            let firstIterMax = horizontal
-                ? this.array.length
-                : this.array[0].length;
-
-            for (let firstIter = 0; firstIter < firstIterMax; firstIter++) {
-                let lastColor = "";
-                let colorCount = 0;
-                // secondIterMax determine for max to first item work like
-                // column in horizontal and like row to vertical
-                let secondIterMax = horizontal
-                    ? this.array[0].length
-                    : this.array.length;
-
-                for (
-                    let secondIter = 0;
-                    secondIter < secondIterMax;
-                    secondIter++
-                ) {
-                    let cell = horizontal
-                        ? this.array[firstIter][secondIter]
-                        : this.array[secondIter][firstIter];
-
-                    if (cell.color == lastColor) {
-                        colorCount++;
-                        if (colorCount >= 4 && lastColor != "") {
-                            for (
-                                let backIndex = secondIter;
-                                backIndex > secondIter - 4;
-                                backIndex--
-                            ) {
-                                let backCell = horizontal
-                                    ? this.array[firstIter][backIndex]
-                                    : this.array[backIndex][firstIter];
-
-                                if (!foundCells.includes(backCell)) {
-                                    foundCells.push(backCell);
-                                }
-                            }
-                        }
-                    } else {
-                        colorCount = 1;
-                        lastColor = cell.color;
-                    }
-                }
-            }
-            return foundCells;
-        };
         let cellsToBeat = [];
 
-        // horizontal beating
-        cellsToBeat = cellsToBeat.concat(getfoundCells(true));
-        // vertical beating
-        cellsToBeat = cellsToBeat.concat(getfoundCells(false));
+        // get horizontal cells to beat
+        cellsToBeat = cellsToBeat.concat(this.getCellsToBeat(true));
+        // get vertical cells to beat
+        cellsToBeat = cellsToBeat.concat(this.getCellsToBeat(false));
 
         if (cellsToBeat.length == 0) {
             return false;
         }
 
+        // beating
         cellsToBeat.forEach((cell) => {
-            cell.resetCell();
+            if (cell.type == CELL_TYPES.virus){
+                this.virusBeat()
+            }
+            cell.beat(() => {
+                this.array[cell.row].splice(
+                    cell.column,
+                    1,
+                    new BoardCell(cell.row, cell.column)
+                );
+            });
         });
-        // this.renderBoard();
         return true;
+    }
+
+    getCellsToBeat (horizontal){
+        let foundCells = [];
+        // firstIterMax determine for max to firstIter work like row in
+        // horizontal and like column to vertical
+        let firstIterMax = horizontal
+            ? this.array.length
+            : this.array[0].length;
+
+        for (let firstIter = 0; firstIter < firstIterMax; firstIter++) {
+            let lastColor = "";
+            let colorCount = 0;
+            // secondIterMax determine for max to first item work like
+            // column in horizontal and like row to vertical
+            let secondIterMax = horizontal
+                ? this.array[0].length
+                : this.array.length;
+
+            for (
+                let secondIter = 0;
+                secondIter < secondIterMax;
+                secondIter++
+            ) {
+                let cell = horizontal
+                    ? this.array[firstIter][secondIter]
+                    : this.array[secondIter][firstIter];
+
+                if (cell.color == lastColor) {
+                    colorCount++;
+                    if (colorCount >= 4 && lastColor != "") {
+                        for (
+                            let backIndex = secondIter;
+                            backIndex > secondIter - 4;
+                            backIndex--
+                        ) {
+                            let backCell = horizontal
+                                ? this.array[firstIter][backIndex]
+                                : this.array[backIndex][firstIter];
+
+                            if (!foundCells.includes(backCell)) {
+                                foundCells.push(backCell);
+                            }
+                        }
+                    }
+                } else {
+                    colorCount = 1;
+                    lastColor = cell.color;
+                }
+            }
+        }
+        return foundCells;
+    };
+
+    virusBeat(){
+        this.recordsBlock.addScore(100);
+        this.virusesCount --;
+        if (this.virusesCount <= 0){
+            this.winCallback();
+        }
     }
 
     doFalling(afterFallingCallback) {
         let autoFallingInterval = setInterval(() => {
-            console.log("autoFallingInterval");
             // get array of pills
             let pillArray = this.array
                 .map((row) =>
@@ -332,11 +367,9 @@ export default class Board {
                 .flat();
             // sort array from cells on down to up and delete uniques
             pillArray.sort((a, b) => b[0].row - a[0].row);
-            console.log(pillArray);
             // for every cell move them down by  movePill(pill, 1, 0)
             let makedMoving = false;
             pillArray.forEach((pill) => {
-                console.log(`moving pill ${pill}`);
                 let moved = this.movePill(pill, 1, 0);
                 makedMoving = moved ? true : makedMoving; // if move pill, change makedMoving to true
             });
@@ -347,5 +380,41 @@ export default class Board {
                 clearInterval(autoFallingInterval);
             }
         }, PILL_AUTO_FALL_FREQUENCY);
+    }
+
+    // viruses
+
+    spawnViruses() {
+        // Math.min to not spawn viruses more than is places to put them
+        let virusesCount =
+            Math.min(
+                Math.floor(Math.random() * this.stage * this.stage) + 4,
+                Math.floor(BOARD_COLUMNS * BOARD_ROWS * 2 / 3)
+            );
+
+        let startColorIdx = Math.floor(Math.random() * COLORS.length);
+
+        for (let virusIter = 0; virusIter < virusesCount; virusIter++) {
+            let randomRow;
+            let randomColumn;
+            let cellToPop;
+            do {
+                // * 2 / 3) + 5 to resp viruses to 2/3 board height
+                randomRow =
+                    Math.floor(
+                        (Math.random() * BOARD_ROWS) * 2 / 3
+                    ) + 5;
+                randomColumn = Math.floor(Math.random() * BOARD_COLUMNS);
+                cellToPop = this.array[randomRow][randomColumn];
+            } while (cellToPop.type == CELL_TYPES.virus);
+
+            // to have more or less equal colors viruses count
+            let virusColor = COLORS[(startColorIdx + virusIter) % 3];
+            let virus = new VirusCell(randomRow, randomColumn, virusColor);
+
+            this.array[randomRow].splice(randomColumn, 1, virus);
+        }
+
+        return virusesCount;
     }
 }
