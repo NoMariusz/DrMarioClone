@@ -55,3 +55,18 @@ body{
     float: left;
     background-size: 100% 100%;
 }
+
+#virusCountBlock{
+    width: 5.1%;
+    height: 4%;
+    margin: 87.3vh 0 0 87.75%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.virusCountCell{
+    width: 50%;
+    height: 100%;
+    float: left;
+    background-size: 100% 100%;
+}

@@ -1,7 +1,8 @@
-import BoardCell from "./BoardCell.js";
-import PillCell from "./PillCell.js";
-import VirusCell from "./VirusCell.js";
+import BoardCell from "./cells/BoardCell.js";
+import PillCell from "./cells/PillCell.js";
+import VirusCell from "./cells/VirusCell.js";
 import RecordsBlock from "./RecordsBlock.js";
+import VirusCountBlock from "./VirusCountBlock.js";
 import {
     CHECK_CELL_CAN_MOVE_STATUSES,
     CELL_TYPES,
@@ -23,7 +24,9 @@ export default class Board {
         // initialize records block to display records
         this.recordsBlock = new RecordsBlock();
 
-        this.virusesCount = this.spawnViruses();
+        let virusesCount = this.spawnViruses();
+        this.virusCountBlock = new VirusCountBlock(virusesCount);
+
         this.winCallback = winCallback
         this.loseCallback = loseCallback
     }
@@ -46,6 +49,7 @@ export default class Board {
     refresh() {
         this.renderBoard();
         this.recordsBlock.renderBlock();
+        this.virusCountBlock.renderBlock();
     }
 
     renderBoard() {
@@ -343,8 +347,8 @@ export default class Board {
 
     virusBeat(){
         this.recordsBlock.addScore(100);
-        this.virusesCount --;
-        if (this.virusesCount <= 0){
+        this.virusCountBlock.virusesCount --;
+        if (this.virusCountBlock.virusesCount <= 0){
             this.winCallback();
         }
     }
