@@ -70,3 +70,25 @@ body{
     float: left;
     background-size: 100% 100%;
 }
+
+#winInfo{
+    width: 45%;
+    height: 20.83%;
+    margin: 33.33vh 0 0 30%;
+    position: absolute;
+    background-image: url('./img/sc.png');
+    background-size: 100% 100%;
+}
+
+#loseInfo{
+    width: 35%;
+    margin: 33.33vh 0 0 35%;
+    height: 20.83%;
+    position: absolute;
+    background-image: url('./img/go.png');
+    background-size: 100% 100%;
+}
+
+.hidden{
+    display: none;
+}

@@ -1,8 +1,5 @@
 import Board from "./classes/Board.js";
-import {
-    PILL_FALL_FREQUENCY,
-    REFRESH_RATE,
-} from "./constants.js";
+import { PILL_FALL_FREQUENCY, REFRESH_RATE } from "./constants.js";
 
 ("use strict");
 
@@ -11,6 +8,7 @@ let movingPill = [];
 let mainBoard;
 let canControl = true;
 let stage = 1;
+let gameStopped = false;
 
 let startGame = () => {
     mainBoard = new Board(stage, stageCompleted, gameOver);
@@ -23,11 +21,13 @@ let startGame = () => {
 };
 
 let initNewPill = () => {
-    console.log("init new pills");
-    canControl = true;
-    movingPill = mainBoard.addNewPill();
+    if (!gameStopped) {
+        console.log("init new pills");
+        canControl = true;
+        movingPill = mainBoard.addNewPill();
 
-    movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
+        movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
+    }
 };
 
 let movePillToDown = () => {
@@ -81,7 +81,9 @@ let keyDownHandler = (e) => {
             break;
         case 83:
         case 40: // s
-            throwPill();
+            if (canControl) {
+                throwPill();
+            }
             break;
     }
 };
@@ -97,11 +99,18 @@ let refreshDisplay = () => {
 };
 
 let gameOver = () => {
-    alert('game over')
-}
+    document.getElementById('loseInfo').classList.remove('hidden')
+    pauseGame();
+};
 
 let stageCompleted = () => {
-    alert('stageCompleeted')
-}
+    document.getElementById('winInfo').classList.remove('hidden')
+    pauseGame();
+};
+
+let pauseGame = () => {
+    gameStopped = true;
+    canControl = false;
+};
 
 startGame();
