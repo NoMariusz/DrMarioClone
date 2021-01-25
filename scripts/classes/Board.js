@@ -3,6 +3,7 @@ import PillCell from "./cells/PillCell.js";
 import VirusCell from "./cells/VirusCell.js";
 import RecordsBlock from "./RecordsBlock.js";
 import VirusCountBlock from "./VirusCountBlock.js";
+import VirusesBlock from "./VirusesBlock.js";
 import {
     CHECK_CELL_CAN_MOVE_STATUSES,
     CELL_TYPES,
@@ -27,6 +28,8 @@ export default class Board {
         let virusesCount = this.spawnViruses();
         this.virusCountBlock = new VirusCountBlock(virusesCount);
 
+        this.virusesBlock = new VirusesBlock();
+
         this.winCallback = winCallback
         this.loseCallback = loseCallback
     }
@@ -50,6 +53,7 @@ export default class Board {
         this.renderBoard();
         this.recordsBlock.renderBlock();
         this.virusCountBlock.renderBlock();
+        this.virusesBlock.refreshBlock();
     }
 
     renderBoard() {

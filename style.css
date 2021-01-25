@@ -92,3 +92,18 @@ body{
 .hidden{
     display: none;
 }
+
+#virusesBlock{
+    background-color: rgba(0, 0, 0, 0);
+    width: 32.5%;
+    height: 49.999%;
+    margin: 49.9999vh 0 0 2.5%;
+    position: absolute;
+}
+
+.virus{
+    position: absolute;
+    width: 31%;
+    height: 25%;
+    background-size: 100% 100%;
+}
