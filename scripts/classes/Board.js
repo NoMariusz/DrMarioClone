@@ -30,8 +30,8 @@ export default class Board {
 
         this.virusesBlock = new VirusesBlock();
 
-        this.winCallback = winCallback
-        this.loseCallback = loseCallback
+        this.winCallback = winCallback;
+        this.loseCallback = loseCallback;
     }
 
     initArray() {
@@ -71,7 +71,13 @@ export default class Board {
         }
     }
 
-    addNewPill(){
+    onGameOver(){
+        this.virusesBlock.onGameOver()
+    }
+
+    // pills stuff
+
+    addNewPill() {
         let pill = [];
         for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
             const pillCell = new PillCell(
@@ -114,7 +120,7 @@ export default class Board {
 
     insertNewCell(cell) {
         let poppedCell = this.array[cell.row].splice(cell.column, 1, cell)[0];
-        if (poppedCell.type == CELL_TYPES.pill){
+        if (poppedCell.type == CELL_TYPES.pill) {
             this.loseCallback();
         }
     }
@@ -283,8 +289,8 @@ export default class Board {
 
         // beating
         cellsToBeat.forEach((cell) => {
-            if (cell.type == CELL_TYPES.virus){
-                this.virusBeat()
+            if (cell.type == CELL_TYPES.virus) {
+                this.virusBeat();
             }
             cell.beat(() => {
                 this.array[cell.row].splice(
@@ -297,7 +303,7 @@ export default class Board {
         return true;
     }
 
-    getCellsToBeat (horizontal){
+    getCellsToBeat(horizontal) {
         let foundCells = [];
         // firstIterMax determine for max to firstIter work like row in
         // horizontal and like column to vertical
@@ -314,11 +320,7 @@ export default class Board {
                 ? this.array[0].length
                 : this.array.length;
 
-            for (
-                let secondIter = 0;
-                secondIter < secondIterMax;
-                secondIter++
-            ) {
+            for (let secondIter = 0; secondIter < secondIterMax; secondIter++) {
                 let cell = horizontal
                     ? this.array[firstIter][secondIter]
                     : this.array[secondIter][firstIter];
@@ -347,12 +349,12 @@ export default class Board {
             }
         }
         return foundCells;
-    };
+    }
 
-    virusBeat(){
+    virusBeat() {
         this.recordsBlock.addScore(100);
-        this.virusCountBlock.virusesCount --;
-        if (this.virusCountBlock.virusesCount <= 0){
+        this.virusCountBlock.virusesCount--;
+        if (this.virusCountBlock.virusesCount <= 0) {
             this.winCallback();
         }
     }
@@ -394,11 +396,10 @@ export default class Board {
 
     spawnViruses() {
         // Math.min to not spawn viruses more than is places to put them
-        let virusesCount =
-            Math.min(
-                Math.floor(Math.random() * this.stage * this.stage) + 4,
-                Math.floor(BOARD_COLUMNS * BOARD_ROWS * 2 / 3)
-            );
+        let virusesCount = Math.min(
+            Math.floor(Math.random() * this.stage * this.stage) + 4,
+            Math.floor((BOARD_COLUMNS * BOARD_ROWS * 2) / 3)
+        );
 
         let startColorIdx = Math.floor(Math.random() * COLORS.length);
 
@@ -409,9 +410,7 @@ export default class Board {
             do {
                 // * 2 / 3) + 5 to resp viruses to 2/3 board height
                 randomRow =
-                    Math.floor(
-                        (Math.random() * BOARD_ROWS) * 2 / 3
-                    ) + 5;
+                    Math.floor((Math.random() * BOARD_ROWS * 2) / 3) + 5;
                 randomColumn = Math.floor(Math.random() * BOARD_COLUMNS);
                 cellToPop = this.array[randomRow][randomColumn];
             } while (cellToPop.type == CELL_TYPES.virus);

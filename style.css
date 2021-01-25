@@ -107,3 +107,12 @@ body{
     height: 25%;
     background-size: 100% 100%;
 }
+
+#loseMarioBlock{
+    position: absolute;
+    width: 17.5%;
+    height: 29.166%;
+    margin: 12.5vh 0 0 75%;
+    background-image: url('./img/go_dr.png');
+    background-size: 100% 100%;
+}

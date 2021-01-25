@@ -99,6 +99,8 @@ let refreshDisplay = () => {
 };
 
 let gameOver = () => {
+    mainBoard.onGameOver()
+    document.getElementById('loseMarioBlock').classList.remove('hidden')
     document.getElementById('loseInfo').classList.remove('hidden')
     pauseGame();
 };
