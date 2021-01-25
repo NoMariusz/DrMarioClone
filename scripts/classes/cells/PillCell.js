@@ -18,6 +18,7 @@ export default class PillCell extends BoardCell {
         this.adjacentCell = null;
         this.isBeat = false;
         this.place = place; // pillCell place at pill from left bottom
+        this.atThrow = true
     }
 
     getCellPosition() {

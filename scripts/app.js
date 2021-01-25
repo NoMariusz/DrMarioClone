@@ -24,9 +24,13 @@ let initNewPill = () => {
     if (!gameStopped) {
         console.log("init new pills");
         canControl = true;
-        movingPill = mainBoard.addNewPill();
 
-        movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
+        let afterThrowCallback=(pill) => {
+            movingPill = pill
+            movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
+        }
+        mainBoard.throwPill(afterThrowCallback);
+
     }
 };
 
@@ -82,13 +86,13 @@ let keyDownHandler = (e) => {
         case 83:
         case 40: // s
             if (canControl) {
-                throwPill();
+                releasePill();
             }
             break;
     }
 };
 
-let throwPill = () => {
+let releasePill = () => {
     clearInterval(movingPillInterval);
     canControl = false;
     movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY / 10);

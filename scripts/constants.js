@@ -3,6 +3,9 @@
 export const BOARD_COLUMNS = 8;
 export const BOARD_ROWS = 16;
 
+export const THROW_BOARD_COLUMNS = 12;
+export const THROW_BOARD_ROWS = 8;
+
 export const CHECK_CELL_CAN_MOVE_STATUSES = Object.freeze({
     canMove: 0,
     hitBorder: 1,

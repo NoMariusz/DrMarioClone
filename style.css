@@ -116,3 +116,11 @@ body{
     background-image: url('./img/go_dr.png');
     background-size: 100% 100%;
 }
+
+#throwPillBlock{
+    position: absolute;
+    width: 30%;
+    height: 33.33%;
+    margin: 0 0 0 50%;
+    background-color: rgba(0, 0, 0, 0);
+}

@@ -15,6 +15,5 @@ To beat cells must be at least 4 cells in that same color in row.
 * s, arrow down - throw pill
 
 ## TODO
-* gravity after beat cells
-* add viruses
-* graphics implementation
+* Beat virus animation
+* Possibility to play next levels

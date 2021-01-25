@@ -1,4 +1,4 @@
-import {CELL_TYPES, BOARD_COLUMNS, BOARD_ROWS} from "../../constants.js"
+import {CELL_TYPES, BOARD_COLUMNS, BOARD_ROWS, THROW_BOARD_COLUMNS, THROW_BOARD_ROWS} from "../../constants.js"
 
 "use strict";
 
@@ -9,15 +9,19 @@ export default class BoardCell{
         this.type = CELL_TYPES.blank;
         this.color = '';
         this.isFalling = false;
+        this.atThrow = false;
     }
 
     makeCellNode(rowIndex, columnIndex){
         let cellNode = document.createElement("div");
 
-        cellNode.style.width = 100 / BOARD_COLUMNS + "%";
-        cellNode.style.height = 100 / BOARD_ROWS + "%";
-        cellNode.style.top = (100 / BOARD_ROWS) * rowIndex + "%";
-        cellNode.style.left = (100 / BOARD_COLUMNS) * columnIndex + "%";
+        let columns = this.atThrow ? THROW_BOARD_COLUMNS : BOARD_COLUMNS
+        let row = this.atThrow ? BOARD_COLUMNS : BOARD_ROWS
+
+        cellNode.style.width = 100 / columns + "%";
+        cellNode.style.height = 100 / row + "%";
+        cellNode.style.top = (100 / row) * rowIndex + "%";
+        cellNode.style.left = (100 / columns) * columnIndex + "%";
         cellNode.classList.add("cell");
 
         return cellNode

@@ -1,9 +1,9 @@
 import BoardCell from "./cells/BoardCell.js";
-import PillCell from "./cells/PillCell.js";
 import VirusCell from "./cells/VirusCell.js";
 import RecordsBlock from "./RecordsBlock.js";
 import VirusCountBlock from "./VirusCountBlock.js";
 import VirusesBlock from "./VirusesBlock.js";
+import ThrowPillBlock from "./ThrowPillBlock.js";
 import {
     CHECK_CELL_CAN_MOVE_STATUSES,
     CELL_TYPES,
@@ -30,6 +30,8 @@ export default class Board {
 
         this.virusesBlock = new VirusesBlock();
 
+        this.throwPillBlock = new ThrowPillBlock();
+
         this.winCallback = winCallback;
         this.loseCallback = loseCallback;
     }
@@ -54,6 +56,7 @@ export default class Board {
         this.recordsBlock.renderBlock();
         this.virusCountBlock.renderBlock();
         this.virusesBlock.refreshBlock();
+        this.throwPillBlock.refreshBlock();
     }
 
     renderBoard() {
@@ -71,27 +74,28 @@ export default class Board {
         }
     }
 
-    onGameOver(){
-        this.virusesBlock.onGameOver()
+    onGameOver() {
+        this.virusesBlock.onGameOver();
     }
 
     // pills stuff
 
-    addNewPill() {
-        let pill = [];
-        for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
-            const pillCell = new PillCell(
-                0,
-                Math.floor(BOARD_COLUMNS / 2) + pillsCountIter - 1,
-                pillsCountIter
-            );
-            pill.push(pillCell);
-            this.insertNewCell(pillCell);
-        }
-        // setting reference between pillCells
-        pill[0].adjacentCell = pill[1];
-        pill[1].adjacentCell = pill[0];
-        return pill;
+    throwPill(afterThrowCallback) {
+        // add to callback stuff to propermove pill to board
+        const afterThrowCallback2 = (pill) => {
+            for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
+                const pillCell = pill[pillsCountIter];
+                pillCell.row = 0;
+                pillCell.column =
+                    Math.floor(BOARD_COLUMNS / 2) + pillsCountIter - 1;
+                pillCell.isHorizontal = true;
+                pillCell.place = pillsCountIter; // because is count from left
+                this.insertNewCell(pillCell);
+            }
+            afterThrowCallback(pill);
+        };
+
+        this.throwPillBlock.throwPill(afterThrowCallback2);
     }
 
     checkCellCanMove(cell, newRow, newColumn) {
