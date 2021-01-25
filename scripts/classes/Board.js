@@ -76,6 +76,7 @@ export default class Board {
 
     onGameOver() {
         this.virusesBlock.onGameOver();
+        this.throwPillBlock.onGameOver();
     }
 
     // pills stuff

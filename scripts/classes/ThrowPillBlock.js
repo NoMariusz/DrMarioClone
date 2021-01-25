@@ -9,9 +9,6 @@ export default class ThrowPillBlock {
         this.node = document.getElementById("throwPillBlock");
         this.frame = 0;
         this.pill = this.makePill();
-        // rows - 8, columns - 12 in table
-        console.log(this.node);
-        console.log(animationFrames);
     }
 
     refreshBlock() {
@@ -45,6 +42,10 @@ export default class ThrowPillBlock {
 
             this.node.appendChild(node);
         });
+    }
+
+    onGameOver(){
+        this.node.classList.add('hidden');
     }
 
     throwPill(afterThrowCallback) {
