@@ -41,7 +41,8 @@ export default class ScoreBlock {
         //clear old scores
         this.node.innerHTML = "";
 
-        [this.top, this.score].forEach((score) => {
+        for (let scoreIter = 0; scoreIter < 2; scoreIter ++){
+            let score = scoreIter == 0 ? this.top : this.score
             // make arrays with top and score vals
             let singleNumArray = makeNumArray(score);
 
@@ -50,7 +51,7 @@ export default class ScoreBlock {
             this.node.appendChild(block);
             block.classList.add("scoreNumbers");
             block.style.marginTop =
-                score === this.top ? TOP_MARGIN_TOP : SCORE_MARGIN_TOP;
+                scoreIter == 0 ? TOP_MARGIN_TOP : SCORE_MARGIN_TOP;
 
             for (let numIter = 0; numIter < 7; numIter++) {
                 let cell = document.createElement("div");
@@ -58,6 +59,6 @@ export default class ScoreBlock {
                 cell.classList.add("scoreNumber");
                 cell.style.backgroundImage = `url('./img/numbers/${singleNumArray[numIter]}.png')`;
             }
-        });
+        };
     }
 }
