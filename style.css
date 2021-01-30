@@ -64,7 +64,7 @@ body{
     background-color: rgba(0, 0, 0, 0);
 }
 
-.virusCountCell{
+.twoNumCountCell{
     width: 50%;
     height: 100%;
     float: left;
@@ -122,5 +122,13 @@ body{
     width: 30%;
     height: 33.33%;
     margin: 0 0 0 50%;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#levelCountBlock{
+    width: 5.1%;
+    height: 4%;
+    margin: 62.4vh 0 0 87.75%;
+    position: absolute;
     background-color: rgba(0, 0, 0, 0);
 }

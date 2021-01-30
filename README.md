@@ -15,4 +15,4 @@ To beat cells must be at least 4 cells in that same color in row.
 * s, arrow down - throw pill
 
 ## TODO
-* Possibility to play next levels
+nothing to do

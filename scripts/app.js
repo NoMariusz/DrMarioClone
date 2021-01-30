@@ -1,4 +1,5 @@
 import Board from "./classes/Board.js";
+import LevelCountBlock from "./classes/LevelCountBlock.js";
 import { PILL_FALL_FREQUENCY, REFRESH_RATE } from "./constants.js";
 
 ("use strict");
@@ -7,8 +8,9 @@ let movingPillInterval;
 let movingPill = [];
 let mainBoard;
 let canControl = true;
-let stage = 1;
+let stage = 0;
 let gameStopped = false;
+let levelCountBlock = new LevelCountBlock(stage);
 
 let startGame = () => {
     mainBoard = new Board(stage, stageCompleted, gameOver);
@@ -112,11 +114,21 @@ let gameOver = () => {
 let stageCompleted = () => {
     document.getElementById('winInfo').classList.remove('hidden')
     pauseGame();
+    document.body.onclick = goToNextStage;
 };
 
 let pauseGame = () => {
     gameStopped = true;
     canControl = false;
 };
+
+let goToNextStage = () => {
+    document.body.onclick = null
+    document.getElementById('winInfo').classList.add('hidden')
+    stage ++;
+    levelCountBlock.setNextLvl(stage);
+    gameStopped = false;
+    startGame();
+}
 
 startGame();

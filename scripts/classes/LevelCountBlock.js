@@ -1,18 +1,14 @@
-import {COLORS} from "../constants.js";
-
 ("use strict");
 
-export default class VirusCountBlock {
-    constructor(virusesCountDict) {
-        this.node = document.getElementById("virusCountBlock");
-        this.virusesCountDict = virusesCountDict;
-        this.virusesCount = 0;
-        this.calculateOverallVirusCount();
+export default class LevelCountBlock {
+    constructor(level) {
+        this.node = document.getElementById("levelCountBlock");
+        this.level = level;
     }
 
     renderBlock() {
         // making array with next numbers
-        let tempNumber = this.virusesCount;
+        let tempNumber = this.level;
         let numberArray = [];
         for (let divider = 10; divider >= 1; divider /= 10) {
             numberArray.push(Math.floor(tempNumber / divider));
@@ -28,15 +24,8 @@ export default class VirusCountBlock {
         });
     }
 
-    calculateOverallVirusCount(){
-        this.virusesCount = 0;
-        COLORS.forEach(color => {
-            this.virusesCount += this.virusesCountDict[color];
-        })
-    }
-
-    onVirusBeat(color){
-        this.virusesCountDict[color] --;
-        this.virusesCount --;
+    setNextLvl(level){
+        this.level = level;
+        this.renderBlock();
     }
 }

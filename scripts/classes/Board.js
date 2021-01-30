@@ -411,7 +411,7 @@ export default class Board {
     spawnViruses() {
         // Math.min to not spawn viruses more than is places to put them
         let virusesCount = Math.min(
-            Math.floor(Math.random() * this.stage * this.stage) + 4,
+            Math.random(Math.random() * this.stage * 3) + 3 + this.stage * 2,
             Math.floor((BOARD_COLUMNS * (BOARD_ROWS - 1) * 2) / 3)
         );
         let virusesDict = {}    // dict storing information about count virus by color
