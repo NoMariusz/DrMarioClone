@@ -25,10 +25,10 @@ export default class Board {
         // initialize records block to display records
         this.recordsBlock = new RecordsBlock();
 
-        let virusesCount = this.spawnViruses();
-        this.virusCountBlock = new VirusCountBlock(virusesCount);
+        let virusesCountDict = this.spawnViruses();
+        this.virusCountBlock = new VirusCountBlock(virusesCountDict);
 
-        this.virusesBlock = new VirusesBlock();
+        this.virusesBlock = new VirusesBlock(() => this.virusCountBlock.virusesCountDict);
 
         this.throwPillBlock = new ThrowPillBlock();
 
@@ -303,7 +303,7 @@ export default class Board {
         // beating
         cellsToBeat.forEach((cell) => {
             if (cell.type == CELL_TYPES.virus) {
-                this.virusBeat();
+                this.virusBeat(cell.color);
             }
             cell.beat(() => {
                 this.array[cell.row].splice(
@@ -364,9 +364,10 @@ export default class Board {
         return foundCells;
     }
 
-    virusBeat() {
+    virusBeat(virusColor) {
         this.recordsBlock.addScore(100);
-        this.virusCountBlock.virusesCount--;
+        this.virusCountBlock.onVirusBeat(virusColor);
+        this.virusesBlock.onVirusBeat(virusColor);
         if (this.virusCountBlock.virusesCount <= 0) {
             this.winCallback();
         }
@@ -413,6 +414,7 @@ export default class Board {
             Math.floor(Math.random() * this.stage * this.stage) + 4,
             Math.floor((BOARD_COLUMNS * (BOARD_ROWS - 1) * 2) / 3)
         );
+        let virusesDict = {}    // dict storing information about count virus by color
 
         let startColorIdx = Math.floor(Math.random() * COLORS.length);
 
@@ -432,9 +434,11 @@ export default class Board {
             let virusColor = COLORS[(startColorIdx + virusIter) % 3];
             let virus = new VirusCell(randomRow, randomColumn, virusColor);
 
+            let viruscolorCount = virusesDict[virusColor]
+            virusesDict[virusColor] = viruscolorCount == undefined ? 1 : viruscolorCount + 1
+
             this.array[randomRow].splice(randomColumn, 1, virus);
         }
-
-        return virusesCount;
+        return virusesDict;
     }
 }

@@ -4,18 +4,16 @@ import VirusBlock from "./VirusBlock.js";
 ("use strict");
 
 export default class VirusesBlock {
-    constructor() {
+    constructor(getVirusCountFunc) {
         this.node = document.getElementById("virusesBlock");
         this.viruses = [];
         this.initViruses();
 
         this.position = 0;
-        this.changePosotionInterval = setInterval(() => {
-            this.position =
-                this.position >= VIRUSES_POSITIONS.length - 1
-                    ? 0
-                    : this.position + 1;
-        }, 1000);
+        this.changePosotionInterval = setInterval(() => {this.virusMove()}, 2000);
+
+        // function to access dict soring all virus-color informations
+        this.getVirusCountFunc = getVirusCountFunc
     }
 
     initViruses() {
@@ -49,5 +47,30 @@ export default class VirusesBlock {
             virus.laughing = true;
         });
         clearInterval(this.changePosotionInterval);
+    }
+
+    onVirusBeat(color){
+        let colorVirus = this.viruses.find(virus => virus.color == color);
+        colorVirus.dying = true;
+    }
+
+    virusMove(){
+        // move viruses
+        this.position =
+            this.position >= VIRUSES_POSITIONS.length - 1
+                ? 0
+                : this.position + 1;
+        // check if any die hard
+        let dyingViruses = this.viruses.filter(virus => virus.dying)
+        dyingViruses.forEach(virus => {
+            // if is no more viruses in that color, delete it
+            if(this.getVirusCountFunc()[virus.color] == 0){
+                let virusIndex = this.viruses.indexOf(virus)
+                this.viruses.splice(virusIndex, 1)
+                virus.clear()
+            } else {
+                virus.dying = false
+            }
+        })
     }
 }

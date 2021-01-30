@@ -1,7 +1,13 @@
+import {COLORS} from "../constants.js";
+
+("use strict");
+
 export default class VirusCountBlock {
-    constructor(virusesCount) {
+    constructor(virusesCountDict) {
         this.node = document.getElementById("virusCountBlock");
-        this.virusesCount = virusesCount;
+        this.virusesCountDict = virusesCountDict;
+        this.virusesCount = 0;
+        this.calculateOverallVirusCount();
     }
 
     renderBlock() {
@@ -20,5 +26,17 @@ export default class VirusCountBlock {
             block.classList.add("virusCountCell");
             block.style.backgroundImage = `url(./img/numbers/${number}.png)`;
         });
+    }
+
+    calculateOverallVirusCount(){
+        this.virusesCount = 0;
+        COLORS.forEach(color => {
+            this.virusesCount += this.virusesCountDict[color];
+        })
+    }
+
+    onVirusBeat(color){
+        this.virusesCountDict[color] --;
+        this.virusesCount --;
     }
 }
