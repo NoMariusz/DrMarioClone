@@ -86,7 +86,7 @@ export default class Board {
         const afterThrowCallback2 = (pill) => {
             for (let pillsCountIter = 0; pillsCountIter < 2; pillsCountIter++) {
                 const pillCell = pill[pillsCountIter];
-                pillCell.row = 0;
+                pillCell.row = 1;
                 pillCell.column =
                     Math.floor(BOARD_COLUMNS / 2) + pillsCountIter - 1;
                 pillCell.isHorizontal = true;
@@ -103,10 +103,18 @@ export default class Board {
         if (
             newRow >= BOARD_ROWS ||
             newColumn >= BOARD_COLUMNS ||
-            newRow < 0 ||
+            newRow < 1 ||
             newColumn < 0
-        ) {
-            return CHECK_CELL_CAN_MOVE_STATUSES.hitBorder;
+        ) {     // if this positoon is not in the bottleneck of board, then return hit border
+            if (
+                !(
+                    newRow == 0 &&
+                    (newColumn == Math.floor(BOARD_COLUMNS / 2) - 1 ||
+                        newColumn == Math.floor(BOARD_COLUMNS / 2))
+                )
+            ) {
+                return CHECK_CELL_CAN_MOVE_STATUSES.hitBorder;
+            }
         }
         if (
             Math.abs(cell.row - newRow) > 1 ||
@@ -403,7 +411,7 @@ export default class Board {
         // Math.min to not spawn viruses more than is places to put them
         let virusesCount = Math.min(
             Math.floor(Math.random() * this.stage * this.stage) + 4,
-            Math.floor((BOARD_COLUMNS * BOARD_ROWS * 2) / 3)
+            Math.floor((BOARD_COLUMNS * (BOARD_ROWS - 1) * 2) / 3)
         );
 
         let startColorIdx = Math.floor(Math.random() * COLORS.length);
@@ -415,7 +423,7 @@ export default class Board {
             do {
                 // * 2 / 3) + 5 to resp viruses to 2/3 board height
                 randomRow =
-                    Math.floor((Math.random() * BOARD_ROWS * 2) / 3) + 5;
+                    Math.floor((Math.random() * (BOARD_ROWS - 1) * 2) / 3) + 5;
                 randomColumn = Math.floor(Math.random() * BOARD_COLUMNS);
                 cellToPop = this.array[randomRow][randomColumn];
             } while (cellToPop.type == CELL_TYPES.virus);

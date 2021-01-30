@@ -1,7 +1,7 @@
 "use strict";
 
 export const BOARD_COLUMNS = 8;
-export const BOARD_ROWS = 16;
+export const BOARD_ROWS = 17;
 
 export const THROW_BOARD_COLUMNS = 12;
 export const THROW_BOARD_ROWS = 8;
@@ -18,7 +18,7 @@ export const COLORS = ["bl", "br", "yl"];
 export const PILL_FALL_FREQUENCY = 700;
 export const PILL_AUTO_FALL_FREQUENCY = 200;
 export const PILL_BEAT_TIME = 180;
-export const REFRESH_RATE = 100; // in ms
+export const REFRESH_RATE = 200; // in ms
 
 export const SCORE_MARGIN_TOP = "8.8vh";
 export const TOP_MARGIN_TOP = "10.7vh";
