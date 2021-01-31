@@ -1,6 +1,6 @@
 import Board from "./classes/Board.js";
 import LevelCountBlock from "./classes/LevelCountBlock.js";
-import { PILL_FALL_FREQUENCY, REFRESH_RATE } from "./constants.js";
+import { PILL_FALL_FREQUENCY, REFRESH_RATE, STAGES_COLORS } from "./constants.js";
 
 ("use strict");
 
@@ -20,6 +20,9 @@ let startGame = () => {
 
     // start clock refreshing game elements
     setInterval(refreshDisplay, REFRESH_RATE);
+
+    // color body to stage color
+    changeStageColor();
 };
 
 let initNewPill = () => {
@@ -129,6 +132,13 @@ let goToNextStage = () => {
     levelCountBlock.setNextLvl(stage);
     gameStopped = false;
     startGame();
+}
+
+let changeStageColor = () =>{
+    let color = STAGES_COLORS[stage % STAGES_COLORS.length];
+    ['app', 'winInfo', 'loseInfo'].forEach(blockId => {
+        document.getElementById(blockId).style.backgroundColor = color;
+    })
 }
 
 startGame();

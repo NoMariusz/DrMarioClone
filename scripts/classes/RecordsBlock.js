@@ -3,7 +3,7 @@
 import { SCORE_MARGIN_TOP, TOP_MARGIN_TOP } from "../constants.js";
 
 export default class ScoreBlock {
-    constructor(htmlNode) {
+    constructor() {
         this.node = document.getElementById('scoreBlock');
         this.top = this.getTop();
         this.score = 0;
