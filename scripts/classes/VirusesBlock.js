@@ -1,4 +1,8 @@
-import { COLORS, VIRUSES_POSITIONS } from "../constants.js";
+import {
+    COLORS,
+    VIRUSES_POSITIONS,
+    DYING_VIRUS_SHOW_INTERVALS,
+} from "../constants.js";
 import VirusBlock from "./VirusBlock.js";
 
 ("use strict");
@@ -10,10 +14,14 @@ export default class VirusesBlock {
         this.initViruses();
 
         this.position = 0;
-        this.changePosotionInterval = setInterval(() => {this.virusMove()}, 2000);
+        // how many change virus positions have skipped to show dying virus
+        this.dyingVirusMovesSkipped = DYING_VIRUS_SHOW_INTERVALS;
+        this.changePosotionInterval = setInterval(() => {
+            this.virusMove();
+        }, 1000);
 
         // function to access dict soring all virus-color informations
-        this.getVirusCountFunc = getVirusCountFunc
+        this.getVirusCountFunc = getVirusCountFunc;
     }
 
     initViruses() {
@@ -36,7 +44,7 @@ export default class VirusesBlock {
 
             let pos = this.position + virusIter * 3;
             pos = pos % VIRUSES_POSITIONS.length;
-            
+
             virus.node.style.top = VIRUSES_POSITIONS[pos][0];
             virus.node.style.left = VIRUSES_POSITIONS[pos][1];
         }
@@ -49,28 +57,34 @@ export default class VirusesBlock {
         clearInterval(this.changePosotionInterval);
     }
 
-    onVirusBeat(color){
-        let colorVirus = this.viruses.find(virus => virus.color == color);
+    onVirusBeat(color) {
+        let colorVirus = this.viruses.find((virus) => virus.color == color);
         colorVirus.dying = true;
+        this.dyingVirusMovesSkipped = 0;
     }
 
-    virusMove(){
+    virusMove() {
+        // block move when some virus is dying
+        if (this.dyingVirusMovesSkipped < DYING_VIRUS_SHOW_INTERVALS){
+            this.dyingVirusMovesSkipped ++;
+            return false
+        }
+        // check if any die hard
+        let dyingViruses = this.viruses.filter((virus) => virus.dying);
+        dyingViruses.forEach((virus) => {
+            // if is no more viruses in that color, delete it
+            if (this.getVirusCountFunc()[virus.color] == 0) {
+                let virusIndex = this.viruses.indexOf(virus);
+                this.viruses.splice(virusIndex, 1);
+                virus.clear();
+            } else {
+                virus.dying = false;
+            }
+        });
         // move viruses
         this.position =
             this.position >= VIRUSES_POSITIONS.length - 1
                 ? 0
                 : this.position + 1;
-        // check if any die hard
-        let dyingViruses = this.viruses.filter(virus => virus.dying)
-        dyingViruses.forEach(virus => {
-            // if is no more viruses in that color, delete it
-            if(this.getVirusCountFunc()[virus.color] == 0){
-                let virusIndex = this.viruses.indexOf(virus)
-                this.viruses.splice(virusIndex, 1)
-                virus.clear()
-            } else {
-                virus.dying = false
-            }
-        })
     }
 }

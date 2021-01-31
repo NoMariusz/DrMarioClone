@@ -43,3 +43,5 @@ export const STAGES_COLORS = [
     "#4700a1",
     "#6f205f",
 ];
+
+export const DYING_VIRUS_SHOW_INTERVALS = 3;
