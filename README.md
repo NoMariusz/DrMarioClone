@@ -1,11 +1,14 @@
-# Dr.Mario
-Dr. Mario game project in JS to school
+# DrMarioClone
+Dr. Mario game clone - school JS project
 
 ## Work
 Move, rotate or throw falling pills at viruses to destroy them.
 To beat cells must be at least 4 cells in that same color in row.
 
 **To run this code, try use live server**
+
+### Notes
+Game have not settings, main menu and that other stuff
 
 ### Controls
 * a, arrow left - move pill left
