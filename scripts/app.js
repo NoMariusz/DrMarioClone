@@ -28,11 +28,12 @@ let startGame = () => {
 let initNewPill = () => {
     if (!gameStopped) {
         console.log("init new pills");
-        canControl = true;
 
         let afterThrowCallback=(pill) => {
             movingPill = pill
+            // clearInterval(movingPillInterval);
             movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY);
+            canControl = true;
         }
         mainBoard.throwPill(afterThrowCallback);
 
@@ -98,8 +99,8 @@ let keyDownHandler = (e) => {
 };
 
 let releasePill = () => {
-    clearInterval(movingPillInterval);
     canControl = false;
+    clearInterval(movingPillInterval);
     movingPillInterval = setInterval(movePillToDown, PILL_FALL_FREQUENCY / 10);
 };
 
