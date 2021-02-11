@@ -1,6 +1,6 @@
 import PillCell from "./cells/PillCell.js";
 import { animationFrames, handFrames } from "../throwFrames.js";
-import { THROW_BOARD_COLUMNS, THROW_BOARD_ROWS } from "../constants.js";
+import { THROW_BOARD_COLUMNS, THROW_BOARD_ROWS, THROW_PILL_SPEED } from "../constants.js";
 
 ("use strict");
 
@@ -62,7 +62,7 @@ export default class ThrowPillBlock {
                 // make new pill
                 this.pill = this.makePill();
             }
-        }, 20);
+        }, THROW_PILL_SPEED);
     }
 
     makePill() {

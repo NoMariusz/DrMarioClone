@@ -21,6 +21,8 @@ export const PILL_AUTO_FALL_FREQUENCY = 200;
 export const PILL_BEAT_TIME = 180;
 export const REFRESH_RATE = 100; // in ms
 
+export const THROW_PILL_SPEED = 20  // ms between changing frame
+
 export const SCORE_MARGIN_TOP = "8.8vh";
 export const TOP_MARGIN_TOP = "10.7vh";
 
