@@ -1,4 +1,5 @@
 import PillCell from "./cells/PillCell.js";
+import { animationFrames, handFrames } from "../throwFrames.js";
 import { THROW_BOARD_COLUMNS, THROW_BOARD_ROWS, THROW_PILL_SPEED } from "../constants.js";
 
 ("use strict");
@@ -8,21 +9,10 @@ export default class ThrowPillBlock {
         this.node = document.getElementById("throwPillBlock");
         this.frame = 0;
         this.pill = this.makePill();
-
-        this.loadAnimationFrames()
-    }
-
-    async loadAnimationFrames() {
-        // load frames for animation from json
-        let throwFramesResponse = await fetch("../../data/throwAnimationFrames.json")
-        this.animationFrames = await throwFramesResponse.json()
-
-        let handFramesResponse = await fetch("../../data/throwHandFrames.json")
-        this.handFrames =  await handFramesResponse.json()
     }
 
     refreshBlock() {
-        let frameObj = this.animationFrames[this.frame];
+        let frameObj = animationFrames[this.frame];
 
         this.node.innerHTML = "";
         for (let pillIter = 0; pillIter <= 1; pillIter++) {
@@ -38,7 +28,7 @@ export default class ThrowPillBlock {
             this.node.appendChild(pillNode);
         }
 
-        let handFrame = this.handFrames[frameObj.hand];
+        let handFrame = handFrames[frameObj.hand];
         handFrame.forEach((element) => {
             let node = document.createElement("div");
             node.classList.add("cell");
@@ -60,15 +50,9 @@ export default class ThrowPillBlock {
 
     throwPill(afterThrowCallback) {
         let animInterval = setInterval(() => {
-            // if frames not loaded from json not play animation
-            if (this.animationFrames == undefined){
-                return false
-            }
-
             this.frame++;
-
-            if (this.frame >= this.animationFrames.length) {
-                // reset frame and stop
+            if (this.frame >= animationFrames.length) {
+                // rert fram and stop
                 this.frame = 0;
                 clearInterval(animInterval);
                 // return pill as callback
